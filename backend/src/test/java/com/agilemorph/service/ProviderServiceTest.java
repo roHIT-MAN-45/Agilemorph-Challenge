@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,11 +22,21 @@ public class ProviderServiceTest {
     ProviderService providerService;
     
     private ProviderDto sampleProvider;
+
+    // Clear provider data before each test
+    @BeforeEach
+    @Transactional
+    void resetDatabase() {
+        // delete dependent audit logs first, then providers
+        io.quarkus.hibernate.orm.panache.Panache.getEntityManager()
+            .createQuery("DELETE FROM AuditLog").executeUpdate();
+        Provider.deleteAll();
+    }
     
     @BeforeEach
     void setUp() {
         sampleProvider = new ProviderDto();
-        sampleProvider.npi = "1234567890";
+        sampleProvider.npi = String.format("%019d", Math.abs(UUID.randomUUID().getMostSignificantBits()));
         sampleProvider.firstName = "John";
         sampleProvider.lastName = "Smith";
         sampleProvider.middleName = "Michael";
