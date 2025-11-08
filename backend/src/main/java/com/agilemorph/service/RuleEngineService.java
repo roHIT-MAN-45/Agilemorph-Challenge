@@ -108,9 +108,12 @@ public class RuleEngineService {
             // Fire rules
             int rulesFired = kieSession.fireAllRules();
             
-            // Collect results from session
+            // Collect results and facts from session
             List<Object> facts = new ArrayList<>();
             for (Object fact : kieSession.getObjects()) {
+                if (fact instanceof RuleEvaluationResponse.RuleResult result) {
+                    response.results.add(result);
+                }
                 facts.add(fact);
             }
             
@@ -146,6 +149,10 @@ public class RuleEngineService {
     }
     
     private void createRuleEvaluationRecords(ProviderDto provider, RuleEvaluationResponse response) {
+        // Skip persistence if provider is not yet saved (id is null)
+        if (provider.id == null) {
+            return;
+        }
         // Create rule evaluation records for each result
         for (RuleEvaluationResponse.RuleResult result : response.results) {
             RuleEvaluation evaluation = new RuleEvaluation();

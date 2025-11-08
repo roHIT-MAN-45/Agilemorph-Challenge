@@ -86,6 +86,8 @@ public class RuleResourceTest {
             .body("success", equalTo(true))
             .body("metadata.rulesFired", greaterThan(0))
             .body("metadata.facts.size()", greaterThan(0))
+            .body("results", notNullValue())
+            .body("results.size()", greaterThan(0))
             .body("metadata.facts.ruleName", hasItem("license-expiry-rule"));
     }
     

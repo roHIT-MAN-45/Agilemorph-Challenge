@@ -42,12 +42,12 @@ public class RuleEngineServiceTest {
         expiredLicense.licenseNumber = "MD123456";
         expiredLicense.state = "CA";
         expiredLicense.licenseType = "Medical Doctor";
-        expiredLicense.issueDate = LocalDate.of(2010, 6, 1);
-        expiredLicense.expiryDate = LocalDate.of(2020, 6, 1); // Expired
+        expiredLicense.issueDate = LocalDate.now().minusYears(5);
+        expiredLicense.expiryDate = LocalDate.now().minusDays(1);
         expiredLicense.status = License.LicenseStatus.EXPIRED;
         expiredLicense.expired = true;
         expiredLicense.expiringSoon = false;
-        expiredLicense.daysUntilExpiry = -1461; // Expired 4 years ago
+        expiredLicense.daysUntilExpiry = -1; // clearly expired
         
         providerWithExpiredLicense.licenses = List.of(expiredLicense);
         
@@ -147,6 +147,8 @@ public class RuleEngineServiceTest {
     
     @Test
     void testRuleEngineStatus() {
+        ruleEngineService = new RuleEngineService();
+    
         assertFalse(ruleEngineService.isRuleEngineInitialized());
         
         ruleEngineService.initializeRuleEngine();
