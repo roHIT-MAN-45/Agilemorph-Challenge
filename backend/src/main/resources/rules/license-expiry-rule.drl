@@ -1,0 +1,55 @@
+package com.agilemorph.rules;
+
+import com.agilemorph.dto.ProviderDto;
+import com.agilemorph.dto.RuleEvaluationResponse;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+// Rule to flag providers with expired or expiring licenses
+rule "License Expiry Check"
+    when
+        $provider: ProviderDto()
+        $license: ProviderDto.LicenseDto() from $provider.licenses
+        eval($license.expired == true || $license.expiringSoon == true)
+    then
+        System.out.println("License expiry rule triggered for provider: " + $provider.npi);
+        
+        // Create rule result
+        RuleEvaluationResponse.RuleResult result = new RuleEvaluationResponse.RuleResult();
+        result.ruleName = "license-expiry-rule";
+        result.triggered = true;
+        result.severity = $license.expired ? "HIGH" : "MEDIUM";
+        result.message = $license.expired ? 
+            "Provider has expired license: " + $license.licenseNumber + " (expired on " + $license.expiryDate + ")" :
+            "Provider has license expiring soon: " + $license.licenseNumber + " (expires on " + $license.expiryDate + ")";
+        result.metadata = "License State: " + $license.state + ", License Type: " + $license.licenseType;
+        result.facts = new ArrayList<>();
+        result.facts.add("License Number: " + $license.licenseNumber);
+        result.facts.add("Expiry Date: " + $license.expiryDate);
+        result.facts.add("Days Until Expiry: " + $license.daysUntilExpiry);
+        
+        // Insert result into session
+        insert(result);
+end
+
+// Rule to flag providers with no valid licenses
+rule "No Valid License Check"
+    when
+        $provider: ProviderDto()
+        eval($provider.licenses == null || $provider.licenses.isEmpty())
+    then
+        System.out.println("No valid license rule triggered for provider: " + $provider.npi);
+        
+        RuleEvaluationResponse.RuleResult result = new RuleEvaluationResponse.RuleResult();
+        result.ruleName = "no-valid-license-rule";
+        result.triggered = true;
+        result.severity = "HIGH";
+        result.message = "Provider has no valid licenses on file";
+        result.metadata = "Provider NPI: " + $provider.npi;
+        result.facts = new ArrayList<>();
+        result.facts.add("Provider Name: " + $provider.firstName + " " + $provider.lastName);
+        result.facts.add("NPI: " + $provider.npi);
+        
+        insert(result);
+end

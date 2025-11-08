@@ -1,0 +1,84 @@
+package com.agilemorph.rules;
+
+import com.agilemorph.dto.ProviderDto;
+import com.agilemorph.dto.RuleEvaluationResponse;
+import java.util.ArrayList;
+import java.util.List;
+
+// Rule to flag potential duplicate providers based on name similarity
+rule "Duplicate Name Detection"
+    when
+        $provider: ProviderDto()
+        eval($provider.firstName != null && $provider.lastName != null)
+        eval(calculateNameSimilarity($provider.firstName, $provider.lastName) > 0.8)
+    then
+        System.out.println("Duplicate detection rule triggered for provider: " + $provider.npi);
+        
+        RuleEvaluationResponse.RuleResult result = new RuleEvaluationResponse.RuleResult();
+        result.ruleName = "duplicate-name-detection-rule";
+        result.triggered = true;
+        result.severity = "MEDIUM";
+        result.message = "Potential duplicate provider detected based on name similarity";
+        result.metadata = "Name: " + $provider.firstName + " " + $provider.lastName;
+        result.facts = new ArrayList<>();
+        result.facts.add("Provider Name: " + $provider.firstName + " " + $provider.lastName);
+        result.facts.add("NPI: " + $provider.npi);
+        result.facts.add("Date of Birth: " + $provider.dateOfBirth);
+        
+        insert(result);
+end
+
+// Rule to flag providers with multiple practice locations with mismatched taxonomies
+rule "Mismatched Taxonomy Locations"
+    when
+        $provider: ProviderDto()
+        eval($provider.practiceLocations != null && $provider.practiceLocations.size() > 3)
+        eval(hasMismatchedTaxonomies($provider))
+    then
+        System.out.println("Mismatched taxonomy rule triggered for provider: " + $provider.npi);
+        
+        RuleEvaluationResponse.RuleResult result = new RuleEvaluationResponse.RuleResult();
+        result.ruleName = "mismatched-taxonomy-rule";
+        result.triggered = true;
+        result.severity = "HIGH";
+        result.message = "Provider has multiple practice locations with mismatched taxonomies";
+        result.metadata = "Location Count: " + $provider.practiceLocations.size();
+        result.facts = new ArrayList<>();
+        result.facts.add("Provider NPI: " + $provider.npi);
+        result.facts.add("Location Count: " + $provider.practiceLocations.size());
+        result.facts.add("Primary Taxonomy: " + $provider.taxonomyCode);
+        
+        insert(result);
+end
+
+// Helper function to calculate name similarity (simplified)
+function double calculateNameSimilarity(String firstName, String lastName) {
+    // This is a simplified similarity calculation
+    // In a real implementation, you would use more sophisticated algorithms
+    String fullName = firstName.toLowerCase() + " " + lastName.toLowerCase();
+    
+    // Simple similarity based on common patterns
+    if (fullName.contains("smith") || fullName.contains("johnson") || fullName.contains("williams")) {
+        return 0.9; // High similarity for common names
+    }
+    
+    return 0.3; // Low similarity for other names
+}
+
+// Helper function to check for mismatched taxonomies
+function boolean hasMismatchedTaxonomies(ProviderDto provider) {
+    if (provider.practiceLocations == null || provider.practiceLocations.size() <= 1) {
+        return false;
+    }
+    
+    String primaryTaxonomy = provider.taxonomyCode;
+    if (primaryTaxonomy == null) {
+        return false;
+    }
+    
+    long mismatchedCount = provider.practiceLocations.stream()
+        .filter(location -> location.taxonomyCode != null && !location.taxonomyCode.equals(primaryTaxonomy))
+        .count();
+    
+    return mismatchedCount > 1;
+}

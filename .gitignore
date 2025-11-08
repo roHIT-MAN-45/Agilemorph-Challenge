@@ -1,0 +1,132 @@
+# Java
+*.class
+*.jar
+*.war
+*.ear
+*.log
+*.log.*
+hs_err_pid*
+replay_pid*
+
+# Maven
+target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
+
+# Quarkus
+.quarkus/
+quarkus.log
+
+# IDE - IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+.idea_modules/
+
+# IDE - Eclipse
+.classpath
+.project
+.settings/
+.metadata
+bin/
+tmp/
+*.tmp
+*.bak
+*.swp
+*~.nib
+local.properties
+.loadpath
+.recommenders
+
+# IDE - VS Code
+.vscode/
+*.code-workspace
+.history/
+
+# IDE - NetBeans
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# Operating System
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment
+.env
+.env.local
+.env.*.local
+*.env
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Docker
+.docker/
+*.pid
+
+# Temporary files
+*.tmp
+*.temp
+*~
+.#*
+
+# Build artifacts
+build/
+dist/
+*.zip
+*.tar.gz
+*.rar
+
+# Test coverage
+*.gcov
+*.gcda
+*.gcno
+
+# Gradle (in case someone uses it)
+.gradle/
+gradle-app.setting
+!gradle-wrapper.jar
+
+# Package Files
+*.jar
+!gradle-wrapper.jar
+!.mvn/wrapper/maven-wrapper.jar
+
+# Generated files
+generated/
+**/generated/
+
+# Flyway
+flyway.conf
+
+# Application specific
+/application.properties.local
+/application-local.properties
+
