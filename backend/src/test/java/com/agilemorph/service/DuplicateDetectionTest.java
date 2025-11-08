@@ -12,6 +12,7 @@ import org.junit.jupiter.api.MethodOrderer;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -24,11 +25,21 @@ public class DuplicateDetectionTest {
     ProviderService providerService;
     
     private ProviderDto baseProvider;
+
+    // Clear provider data before each test
+    @BeforeEach
+    @Transactional
+    void resetDatabase() {
+        // delete dependent audit logs first, then providers
+        io.quarkus.hibernate.orm.panache.Panache.getEntityManager()
+            .createQuery("DELETE FROM AuditLog").executeUpdate();
+        Provider.deleteAll();
+    }
     
     @BeforeEach
     void setUp() {
         baseProvider = new ProviderDto();
-        baseProvider.npi = "1234567890";
+        baseProvider.npi = String.format("%019d", Math.abs(UUID.randomUUID().getMostSignificantBits()));
         baseProvider.firstName = "John";
         baseProvider.lastName = "Smith";
         baseProvider.dateOfBirth = LocalDate.of(1980, 5, 15);
