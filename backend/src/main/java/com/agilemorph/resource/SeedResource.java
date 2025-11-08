@@ -14,6 +14,7 @@ import org.eclipse.microprofile.openapi.annotations.tags.Tag;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +33,16 @@ public class SeedResource {
     @Transactional
     public Response seedProviders() {
         try {
+            long count = Provider.count();
+
+            if (count > 0) {
+                // Skip seeding if already done
+                return Response.ok(Map.of(
+                    "message", "Sample providers already exist",
+                    "count", count
+                )).build();
+            }
+
             List<ProviderDto> sampleProviders = createSampleProviders();
             List<ProviderDto> createdProviders = providerService.createProvidersBulk(sampleProviders);
             

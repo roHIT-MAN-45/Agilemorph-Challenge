@@ -15,6 +15,8 @@ public class SeedResourceTest {
     @Test
     void testSeedProviders() {
         given()
+            .contentType(ContentType.JSON)
+            .accept(ContentType.JSON)
         .when()
             .post("/api/seed/providers")
         .then()
@@ -27,20 +29,19 @@ public class SeedResourceTest {
     
     @Test
     void testSeedProvidersMultipleTimes() {
-        // First seeding
-        given()
-        .when()
-            .post("/api/seed/providers")
-        .then()
-            .statusCode(200);
-        
-        // Second seeding should still work
-        given()
-        .when()
-            .post("/api/seed/providers")
-        .then()
-            .statusCode(200)
-            .body("message", equalTo("Sample providers created successfully"))
-            .body("count", greaterThan(0));
+        for (int i = 0; i < 2; i++) {
+            given()
+                .contentType(ContentType.JSON)
+                .accept(ContentType.JSON)
+            .when()
+                .post("/api/seed/providers")
+            .then()
+                .statusCode(200)
+                .body("message", anyOf(
+                    equalTo("Sample providers created successfully"),
+                    equalTo("Sample providers already exist")
+                ))
+                .body("count", greaterThan(0));
+        }
     }
 }
