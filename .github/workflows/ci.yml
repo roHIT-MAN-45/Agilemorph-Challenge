@@ -26,7 +26,8 @@ jobs:
           - 5432:5432
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -35,13 +36,13 @@ jobs:
           distribution: "temurin"
 
       - name: Cache Maven dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Run tests
+      - name: Run unit tests
         run: |
           cd backend
           mvn clean test
@@ -60,8 +61,8 @@ jobs:
           QUARKUS_DATASOURCE_PASSWORD: agilemorph123
 
       - name: Upload test results
-        uses: actions/upload-artifact@v3
         if: always()
+        uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: backend/target/surefire-reports/
