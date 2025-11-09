@@ -1,6 +1,14 @@
+-- Create Sequences
+CREATE SEQUENCE IF NOT EXISTS providers_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS licenses_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS practice_locations_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS rule_evaluations_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS audit_logs_seq START WITH 1 INCREMENT BY 1;
+CREATE SEQUENCE IF NOT EXISTS rule_evaluation_facts_seq START WITH 1 INCREMENT BY 1;
+
 -- Create providers table
 CREATE TABLE providers (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY DEFAULT nextval('providers_seq'),
     npi VARCHAR(10) UNIQUE NOT NULL,
     first_name VARCHAR(100) NOT NULL,
     last_name VARCHAR(100) NOT NULL,
@@ -17,7 +25,7 @@ CREATE TABLE providers (
 
 -- Create licenses table
 CREATE TABLE licenses (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY DEFAULT nextval('licenses_seq'),
     provider_id BIGINT NOT NULL REFERENCES providers(id) ON DELETE CASCADE,
     license_number VARCHAR(50) NOT NULL,
     state VARCHAR(2) NOT NULL,
@@ -31,7 +39,7 @@ CREATE TABLE licenses (
 
 -- Create practice_locations table
 CREATE TABLE practice_locations (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY DEFAULT nextval('practice_locations_seq'),
     provider_id BIGINT NOT NULL REFERENCES providers(id) ON DELETE CASCADE,
     name VARCHAR(200) NOT NULL,
     address_line1 VARCHAR(200) NOT NULL,
@@ -48,7 +56,7 @@ CREATE TABLE practice_locations (
 
 -- Create audit_logs table
 CREATE TABLE audit_logs (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY DEFAULT nextval('audit_logs_seq'),
     provider_id BIGINT NOT NULL REFERENCES providers(id) ON DELETE CASCADE,
     action VARCHAR(100) NOT NULL,
     details TEXT,
@@ -59,7 +67,7 @@ CREATE TABLE audit_logs (
 
 -- Create rule_evaluations table
 CREATE TABLE rule_evaluations (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY DEFAULT nextval('rule_evaluations_seq'),
     provider_id BIGINT NOT NULL REFERENCES providers(id) ON DELETE CASCADE,
     rule_name VARCHAR(100) NOT NULL,
     triggered BOOLEAN NOT NULL DEFAULT FALSE,
@@ -71,7 +79,7 @@ CREATE TABLE rule_evaluations (
 
 -- Create rule_evaluation_facts table for storing rule facts
 CREATE TABLE rule_evaluation_facts (
-    id BIGSERIAL PRIMARY KEY,
+    id BIGINT PRIMARY KEY DEFAULT nextval('rule_evaluation_facts_seq'),
     rule_evaluation_id BIGINT NOT NULL REFERENCES rule_evaluations(id) ON DELETE CASCADE,
     fact VARCHAR(500)
 );
