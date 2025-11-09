@@ -42,11 +42,22 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
+      - name: Wait for PostgreSQL
+        run: |
+          until pg_isready -h localhost -p 5432 -U agilemorph; do
+            echo "Waiting for PostgreSQL..."
+            sleep 3
+          done
+          echo "PostgreSQL is ready"
+        env:
+          PGPASSWORD: agilemorph123
+
       - name: Run unit tests
         run: |
           cd backend
-          mvn clean test
+          mvn clean test -B
         env:
+          QUARKUS_DATASOURCE_DB_KIND: postgresql
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/agilemorph_db
           QUARKUS_DATASOURCE_USERNAME: agilemorph
           QUARKUS_DATASOURCE_PASSWORD: agilemorph123
@@ -54,8 +65,9 @@ jobs:
       - name: Run integration tests
         run: |
           cd backend
-          mvn verify
+          mvn verify -B
         env:
+          QUARKUS_DATASOURCE_DB_KIND: postgresql
           QUARKUS_DATASOURCE_JDBC_URL: jdbc:postgresql://localhost:5432/agilemorph_db
           QUARKUS_DATASOURCE_USERNAME: agilemorph
           QUARKUS_DATASOURCE_PASSWORD: agilemorph123
