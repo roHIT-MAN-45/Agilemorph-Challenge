@@ -132,6 +132,7 @@ public class RuleResourceTest {
         .when()
             .post("/api/providers")
         .then()
+            .log().all()
             .statusCode(anyOf(is(201), is(409)))
             .extract();
 
