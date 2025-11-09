@@ -10,9 +10,10 @@ import java.util.List;
 @Entity
 @Table(name = "rule_evaluations")
 public class RuleEvaluation extends PanacheEntityBase {
-
+    
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "rule_evaluations_seq")
+    @SequenceGenerator(name = "rule_evaluations_seq", sequenceName = "rule_evaluations_seq", allocationSize = 1)
     public Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)

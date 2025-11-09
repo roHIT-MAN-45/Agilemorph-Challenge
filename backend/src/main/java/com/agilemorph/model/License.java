@@ -1,6 +1,6 @@
 package com.agilemorph.model;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,7 +9,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "licenses")
-public class License extends PanacheEntity {
+public class License extends PanacheEntityBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "licenses_seq")
+    @SequenceGenerator(name = "licenses_seq", sequenceName = "licenses_seq", allocationSize = 1)
+    public Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "provider_id", nullable = false)

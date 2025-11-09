@@ -1,6 +1,6 @@
 package com.agilemorph.model;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntity;
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -12,7 +12,12 @@ import java.util.List;
 
 @Entity
 @Table(name = "providers")
-public class Provider extends PanacheEntity {
+public class Provider extends PanacheEntityBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "providers_seq")
+    @SequenceGenerator(name = "providers_seq", sequenceName = "providers_seq", allocationSize = 1)
+    public Long id;
     
     @NotBlank
     @Column(name = "npi", unique = true, nullable = false)
