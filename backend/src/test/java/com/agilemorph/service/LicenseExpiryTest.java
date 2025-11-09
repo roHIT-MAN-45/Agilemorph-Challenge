@@ -1,17 +1,31 @@
 package com.agilemorph.service;
 
 import com.agilemorph.model.License;
+import org.flywaydb.core.Flyway;
 import io.quarkus.test.junit.QuarkusTest;
+import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
-@Transactional
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class LicenseExpiryTest {
+
+    @Inject
+    Flyway flyway;
+
+    @BeforeAll
+    void init() {
+        flyway.clean();
+        flyway.migrate();
+    }
     
     @Test
     void testLicenseExpiryCalculation() {

@@ -25,7 +25,7 @@ public class ProviderResourceTest {
     // Clear provider data before each test
     @BeforeEach
     @Transactional
-    void resetDatabase() {
+    void resetDB() {
         // delete dependent audit logs first, then providers
         io.quarkus.hibernate.orm.panache.Panache.getEntityManager()
             .createQuery("DELETE FROM AuditLog").executeUpdate();
@@ -35,7 +35,7 @@ public class ProviderResourceTest {
     @BeforeEach
     void setUp() {
         sampleProvider = new ProviderDto();
-        sampleProvider.npi = String.format("%019d", Math.abs(UUID.randomUUID().getMostSignificantBits()));
+        sampleProvider.npi = String.format("%010d", System.nanoTime() % 1_000_000_0000L);
         sampleProvider.firstName = "John";
         sampleProvider.lastName = "Smith";
         sampleProvider.middleName = "Michael";

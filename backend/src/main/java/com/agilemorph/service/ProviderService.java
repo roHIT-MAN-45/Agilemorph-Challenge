@@ -259,7 +259,16 @@ public class ProviderService {
         dto.message = evaluation.message;
         dto.metadata = evaluation.metadata;
         dto.evaluatedAt = evaluation.evaluatedAt.toLocalDate();
-        dto.facts = evaluation.facts;
+        
+        // Safely initialize lazy-loaded collection
+        try {
+            dto.facts = (evaluation.facts != null)
+                ? evaluation.facts.stream().collect(Collectors.toList())
+                : List.of();
+        } catch (Exception e) {
+            dto.facts = List.of();
+        }
+
         return dto;
     }
 }

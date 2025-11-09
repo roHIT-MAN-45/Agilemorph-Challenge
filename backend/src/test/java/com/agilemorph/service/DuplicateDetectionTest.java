@@ -29,7 +29,7 @@ public class DuplicateDetectionTest {
     // Clear provider data before each test
     @BeforeEach
     @Transactional
-    void resetDatabase() {
+    void resetDB() {
         // delete dependent audit logs first, then providers
         io.quarkus.hibernate.orm.panache.Panache.getEntityManager()
             .createQuery("DELETE FROM AuditLog").executeUpdate();
@@ -39,7 +39,7 @@ public class DuplicateDetectionTest {
     @BeforeEach
     void setUp() {
         baseProvider = new ProviderDto();
-        baseProvider.npi = String.format("%019d", Math.abs(UUID.randomUUID().getMostSignificantBits()));
+        baseProvider.npi = String.format("%010d", System.nanoTime() % 1_000_000_0000L);
         baseProvider.firstName = "John";
         baseProvider.lastName = "Smith";
         baseProvider.dateOfBirth = LocalDate.of(1980, 5, 15);

@@ -33,13 +33,14 @@ public class SeedResource {
     @Transactional
     public Response seedProviders() {
         try {
-            long count = Provider.count();
+            List<ProviderDto> existingProviders = providerService.getAllProviders();
 
-            if (count > 0) {
-                // Skip seeding if already done
+            // If already seeded, return gracefully
+            if (existingProviders != null && !existingProviders.isEmpty()) {
                 return Response.ok(Map.of(
-                    "message", "Sample providers already exist",
-                    "count", count
+                        "message", "Sample providers already exist",
+                        "count", existingProviders.size(),
+                        "providers", existingProviders
                 )).build();
             }
 
